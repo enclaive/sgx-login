@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CppUnitTest.h"
 #include "../sgx-login/sgx-login.h"
+#include "sgx-login-enclave_u.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -10,9 +11,9 @@ namespace sgxlogintests
 	{
 	public:
 		
-		TEST_METHOD(sgx_login_success)
+		TEST_METHOD(login_success)
 		{
-			int token = sgx_login();
+			int token = login();
 			bool verified = sgx_verify(token);
 
 			Assert::AreEqual(true, verified);
@@ -43,7 +44,7 @@ namespace sgxlogintests
 
 		TEST_METHOD(sgx_logout_success)
 		{
-			int token = sgx_login();
+			int token = login();
 			sgx_logout(token);
 			bool verified = sgx_verify(token);
 
