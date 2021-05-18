@@ -1,9 +1,10 @@
 enclave {
     from "sgx_tstdc.edl" import *;
+     from "../LoginEnclaveLib/LoginEnclaveLib.edl" import *;
 
     trusted {
         /* define ECALLs here. */
-        public int sgx_login();
+
     };
 
     untrusted {

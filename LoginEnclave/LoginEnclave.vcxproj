@@ -52,7 +52,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectGuid>{078DD317-22C5-4770-9005-9DD887892812}</ProjectGuid>
+    <ProjectGuid>{DEABFD60-100C-4AFE-9E7A-15F0C8648F42}</ProjectGuid>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -188,18 +188,6 @@
       <WarningLevel>Level3</WarningLevel>
       <AdditionalIncludeDirectories>$(SGXSDKInstallPath)include;$(SGXSDKInstallPath)include\tlibc;$(SGXSDKInstallPath)include\libc++;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
-    <Link>
-      <AdditionalDependencies>sgx_trts.lib;sgx_tstdc.lib;sgx_tservice.lib;sgx_tcrypto.lib;sgx_tcxx.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SGXSDKInstallPath)bin\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
-      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
-      <EntryPointSymbol />
-      <NoEntryPoint>true</NoEntryPoint>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-    <PostBuildEvent>
-      <Command>"$(SGXSDKInstallPath)bin\win32\release\sgx_sign.exe" sign -key "$(ProjectDir)sgx-login-enclave_private.pem" -enclave "$(OutDir)sgx-login-enclave.dll" -out "$(OutDir)sgx-login-enclave.signed.dll" -config "$(ProjectDir)sgx-login-enclave.config.xml</Command>
-      <Message>sign the enclave</Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Simulation|Win32'">
     <ClCompile>
@@ -218,7 +206,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>"$(SGXSDKInstallPath)bin\win32\release\sgx_sign.exe" sign -key "$(ProjectDir)sgx-login-enclave_private.pem" -enclave "$(OutDir)sgx-login-enclave.dll" -out "$(OutDir)sgx-login-enclave.signed.dll" -config "$(ProjectDir)sgx-login-enclave.config.xml</Command>
+      <Command>"$(SGXSDKInstallPath)bin\win32\release\sgx_sign.exe" sign -key "$(ProjectDir)LoginEnclave_private.pem" -enclave "$(OutDir)LoginEnclave.dll" -out "$(OutDir)LoginEnclave.signed.dll" -config "$(ProjectDir)LoginEnclave.config.xml</Command>
       <Message>sign the enclave</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -241,7 +229,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
     <PostBuildEvent>
-      <Command>"$(SGXSDKInstallPath)bin\win32\release\sgx_sign.exe" gendata -enclave "$(OutDir)sgx-login-enclave.dll" -out "$(OutDir)sgx-login-enclave.hex" -config "$(ProjectDir)sgx-login-enclave.config.xml"</Command>
+      <Command>"$(SGXSDKInstallPath)bin\win32\release\sgx_sign.exe" gendata -enclave "$(OutDir)LoginEnclave.dll" -out "$(OutDir)LoginEnclave.hex" -config "$(ProjectDir)LoginEnclave.config.xml"</Command>
       <Message>generate the enclave signing material</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -264,7 +252,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
     <PostBuildEvent>
-      <Command>"$(SGXSDKInstallPath)bin\win32\release\sgx_sign.exe" sign -key "$(ProjectDir)sgx-login-enclave_private.pem" -enclave "$(OutDir)sgx-login-enclave.dll" -out "$(OutDir)sgx-login-enclave.signed.dll" -config "$(ProjectDir)sgx-login-enclave.config.xml"</Command>
+      <Command>"$(SGXSDKInstallPath)bin\win32\release\sgx_sign.exe" sign -key "$(ProjectDir)LoginEnclave_private.pem" -enclave "$(OutDir)LoginEnclave.dll" -out "$(OutDir)LoginEnclave.signed.dll" -config "$(ProjectDir)LoginEnclave.config.xml"</Command>
       <Message>sign the enclave</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -275,7 +263,20 @@
       <Optimization>Disabled</Optimization>
       <WarningLevel>Level3</WarningLevel>
       <AdditionalIncludeDirectories>$(SGXSDKInstallPath)include;$(SGXSDKInstallPath)include\tlibc;$(SGXSDKInstallPath)include\libc++;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/d2FH4- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>sgx_trts.lib;sgx_tstdc.lib;sgx_tservice.lib;sgx_tcrypto.lib;sgx_tcxx.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SGXSDKInstallPath)bin\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <EntryPointSymbol />
+      <NoEntryPoint>true</NoEntryPoint>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PostBuildEvent>
+      <Command>"$(SGXSDKInstallPath)bin\x64\release\sgx_sign.exe" sign -key "$(ProjectDir)LoginEnclave_private.pem" -enclave "$(OutDir)LoginEnclave.dll" -out "$(OutDir)LoginEnclave.signed.dll" -config "$(ProjectDir)LoginEnclave.config.xml"</Command>
+      <Message>sign the enclave</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Simulation|x64'">
     <ClCompile>
@@ -295,7 +296,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>"$(SGXSDKInstallPath)bin\x64\release\sgx_sign.exe" sign -key "$(ProjectDir)sgx-login-enclave_private.pem" -enclave "$(OutDir)sgx-login-enclave.dll" -out "$(OutDir)sgx-login-enclave.signed.dll" -config "$(ProjectDir)sgx-login-enclave.config.xml"</Command>
+      <Command>"$(SGXSDKInstallPath)bin\x64\release\sgx_sign.exe" sign -key "$(ProjectDir)LoginEnclave_private.pem" -enclave "$(OutDir)LoginEnclave.dll" -out "$(OutDir)LoginEnclave.signed.dll" -config "$(ProjectDir)LoginEnclave.config.xml"</Command>
       <Message>sign the enclave</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -319,7 +320,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
     <PostBuildEvent>
-      <Command>"$(SGXSDKInstallPath)bin\x64\release\sgx_sign.exe" gendata -enclave "$(OutDir)sgx-login-enclave.dll" -out "$(OutDir)sgx-login-enclave.hex" -config "$(ProjectDir)sgx-login-enclave.config.xml"</Command>
+      <Command>"$(SGXSDKInstallPath)bin\x64\release\sgx_sign.exe" gendata -enclave "$(OutDir)LoginEnclave.dll" -out "$(OutDir)LoginEnclave.hex" -config "$(ProjectDir)LoginEnclave.config.xml"</Command>
       <Message>generate the enclave signing material</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -343,7 +344,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
     <PostBuildEvent>
-      <Command>"$(SGXSDKInstallPath)bin\x64\release\sgx_sign.exe" gendata -enclave "$(OutDir)sgx-login-enclave.dll" -out "$(OutDir)sgx-login-enclave.hex" -config "$(ProjectDir)sgx-login-enclave.config.xml"</Command>
+      <Command>"$(SGXSDKInstallPath)bin\x64\release\sgx_sign.exe" gendata -enclave "$(OutDir)LoginEnclave.dll" -out "$(OutDir)LoginEnclave.hex" -config "$(ProjectDir)LoginEnclave.config.xml"</Command>
       <Message>generate the enclave signing material</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -367,7 +368,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
     <PostBuildEvent>
-      <Command>"$(SGXSDKInstallPath)bin\x64\release\sgx_sign.exe" gendata -enclave "$(OutDir)sgx-login-enclave.dll" -out "$(OutDir)sgx-login-enclave.hex" -config "$(ProjectDir)sgx-login-enclave.config.xml"</Command>
+      <Command>"$(SGXSDKInstallPath)bin\x64\release\sgx_sign.exe" gendata -enclave "$(OutDir)LoginEnclave.dll" -out "$(OutDir)LoginEnclave.hex" -config "$(ProjectDir)LoginEnclave.config.xml"</Command>
       <Message>generate the enclave signing material</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -391,7 +392,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
     <PostBuildEvent>
-      <Command>"$(SGXSDKInstallPath)bin\x64\release\sgx_sign.exe" sign -key "$(ProjectDir)sgx-login-enclave_private.pem" -enclave "$(OutDir)sgx-login-enclave.dll" -out "$(OutDir)sgx-login-enclave.signed.dll" -config "$(ProjectDir)sgx-login-enclave.config.xml"</Command>
+      <Command>"$(SGXSDKInstallPath)bin\x64\release\sgx_sign.exe" sign -key "$(ProjectDir)LoginEnclave_private.pem" -enclave "$(OutDir)LoginEnclave.dll" -out "$(OutDir)LoginEnclave.signed.dll" -config "$(ProjectDir)LoginEnclave.config.xml"</Command>
       <Message>sign the enclave</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -415,7 +416,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
     <PostBuildEvent>
-      <Command>"$(SGXSDKInstallPath)bin\x64\release\sgx_sign.exe" sign -key "$(ProjectDir)sgx-login-enclave_private.pem" -enclave "$(OutDir)sgx-login-enclave.dll" -out "$(OutDir)sgx-login-enclave.signed.dll" -config "$(ProjectDir)sgx-login-enclave.config.xml"</Command>
+      <Command>"$(SGXSDKInstallPath)bin\x64\release\sgx_sign.exe" sign -key "$(ProjectDir)LoginEnclave_private.pem" -enclave "$(OutDir)LoginEnclave.dll" -out "$(OutDir)LoginEnclave.signed.dll" -config "$(ProjectDir)LoginEnclave.config.xml"</Command>
       <Message>sign the enclave</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -439,14 +440,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
     <PostBuildEvent>
-      <Command>"$(SGXSDKInstallPath)bin\x64\release\sgx_sign.exe" sign -key "$(ProjectDir)sgx-login-enclave_private.pem" -enclave "$(OutDir)sgx-login-enclave.dll" -out "$(OutDir)sgx-login-enclave.signed.dll" -config "$(ProjectDir)sgx-login-enclave.config.xml"</Command>
+      <Command>"$(SGXSDKInstallPath)bin\x64\release\sgx_sign.exe" sign -key "$(ProjectDir)LoginEnclave_private.pem" -enclave "$(OutDir)LoginEnclave.dll" -out "$(OutDir)LoginEnclave.signed.dll" -config "$(ProjectDir)LoginEnclave.config.xml"</Command>
       <Message>sign the enclave</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <AdditionalOptions>/d2FH4- %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
       <AdditionalDependencies>sgx_trts.lib;sgx_tstdc.lib;sgx_tservice.lib;sgx_tcrypto.lib;sgx_tcxx.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SGXSDKInstallPath)bin\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
@@ -456,7 +454,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>"$(SGXSDKInstallPath)bin\x64\release\sgx_sign.exe" sign -key "$(ProjectDir)sgx-login-enclave_private.pem" -enclave "$(OutDir)sgx-login-enclave.dll" -out "$(OutDir)sgx-login-enclave.signed.dll" -config "$(ProjectDir)sgx-login-enclave.config.xml"</Command>
+      <Command>"$(SGXSDKInstallPath)bin\win32\release\sgx_sign.exe" sign -key "$(ProjectDir)LoginEnclave_private.pem" -enclave "$(OutDir)LoginEnclave.dll" -out "$(OutDir)LoginEnclave.signed.dll" -config "$(ProjectDir)LoginEnclave.config.xml</Command>
       <Message>sign the enclave</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -466,65 +464,65 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(projectname)_t.h" />
-    <ClInclude Include="sgx-login-enclave.h" />
+    <ClInclude Include="LoginEnclave.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="$(projectname).edl">
       <Command Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-Load-Prerelease|x64'">"$(SGXSDKInstallPath)bin\win32\release\sgx_edger8r.exe" --trusted "%(FullPath)" --search-path "$(SGXSDKInstallPath)include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-Load-Prerelease|x64'">Creating proxy/bridge routines</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-Load-Prerelease|x64'">%(Filename)_t.h;%(Filename)_t.c;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-Load-Prerelease|x64'">sgx-login-enclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-Load-Prerelease|x64'">LoginEnclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-CF-Prerelease|x64'">"$(SGXSDKInstallPath)bin\win32\release\sgx_edger8r.exe" --trusted "%(FullPath)" --search-path "$(SGXSDKInstallPath)include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-CF-Prerelease|x64'">Creating proxy/bridge routines</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-CF-Prerelease|x64'">%(Filename)_t.h;%(Filename)_t.c;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-CF-Prerelease|x64'">sgx-login-enclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-CF-Prerelease|x64'">LoginEnclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(SGXSDKInstallPath)bin\win32\release\sgx_edger8r.exe" --trusted "%(FullPath)" --search-path "$(SGXSDKInstallPath)include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Creating proxy/bridge routines</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename)_t.h;%(Filename)_t.c;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">sgx-login-enclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">LoginEnclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(SGXSDKInstallPath)bin\win32\release\sgx_edger8r.exe" --trusted "%(FullPath)" --search-path "$(SGXSDKInstallPath)include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Creating proxy/bridge routines</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename)_t.h;%(Filename)_t.c;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">sgx-login-enclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">LoginEnclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(SGXSDKInstallPath)bin\win32\release\sgx_edger8r.exe" --trusted "%(FullPath)" --search-path "$(SGXSDKInstallPath)include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Creating proxy/bridge routines</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename)_t.h;%(Filename)_t.c;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">sgx-login-enclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">LoginEnclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(SGXSDKInstallPath)bin\win32\release\sgx_edger8r.exe" --trusted "%(FullPath)" --search-path "$(SGXSDKInstallPath)include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Creating proxy/bridge routines</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename)_t.h;%(Filename)_t.c;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">sgx-login-enclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">LoginEnclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-CF-Release|x64'">"$(SGXSDKInstallPath)bin\win32\release\sgx_edger8r.exe" --trusted "%(FullPath)" --search-path "$(SGXSDKInstallPath)include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-CF-Release|x64'">Creating proxy/bridge routines</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-CF-Release|x64'">%(Filename)_t.h;%(Filename)_t.c;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-CF-Release|x64'">sgx-login-enclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-CF-Release|x64'">LoginEnclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Prerelease|Win32'">"$(SGXSDKInstallPath)bin\win32\release\sgx_edger8r.exe" --trusted "%(FullPath)" --search-path "$(SGXSDKInstallPath)include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Prerelease|Win32'">Creating proxy/bridge routines</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Prerelease|Win32'">%(Filename)_t.h;%(Filename)_t.c;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Prerelease|Win32'">sgx-login-enclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Prerelease|Win32'">LoginEnclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Simulation|Win32'">"$(SGXSDKInstallPath)bin\win32\release\sgx_edger8r.exe" --trusted "%(FullPath)" --search-path "$(SGXSDKInstallPath)include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Simulation|Win32'">Creating proxy/bridge routines</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Simulation|Win32'">%(Filename)_t.h;%(Filename)_t.c;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Simulation|Win32'">sgx-login-enclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Simulation|Win32'">LoginEnclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Simulation|x64'">"$(SGXSDKInstallPath)bin\win32\release\sgx_edger8r.exe" --trusted "%(FullPath)" --search-path "$(SGXSDKInstallPath)include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Simulation|x64'">Creating proxy/bridge routines</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Simulation|x64'">%(Filename)_t.h;%(Filename)_t.c;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Simulation|x64'">sgx-login-enclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Simulation|x64'">LoginEnclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Prerelease|x64'">"$(SGXSDKInstallPath)bin\win32\release\sgx_edger8r.exe" --trusted "%(FullPath)" --search-path "$(SGXSDKInstallPath)include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Prerelease|x64'">Creating proxy/bridge routines</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Prerelease|x64'">%(Filename)_t.h;%(Filename)_t.c;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Prerelease|x64'">sgx-login-enclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Prerelease|x64'">LoginEnclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-Load-Release|x64'">"$(SGXSDKInstallPath)bin\win32\release\sgx_edger8r.exe" --trusted "%(FullPath)" --search-path "$(SGXSDKInstallPath)include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-Load-Release|x64'">Creating proxy/bridge routines</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-Load-Release|x64'">%(Filename)_t.h;%(Filename)_t.c;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-Load-Release|x64'">sgx-login-enclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='CVE-2020-0551-Load-Release|x64'">LoginEnclave.config.xml;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="$(projectname).config.xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="sgx-login-enclave_private.pem" />
+    <None Include="LoginEnclave_private.pem" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

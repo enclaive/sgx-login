@@ -14,39 +14,30 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="Generated Files">
-      <UniqueIdentifier>{ac94471d-0056-48fd-81fe-27e62512b307}</UniqueIdentifier>
+      <UniqueIdentifier>{fc36c863-0f86-454b-9b6b-c23780621a8d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{77f16a75-239a-4f9f-be7d-836863ece96f}</UniqueIdentifier>
+      <UniqueIdentifier>{f7638b89-7779-4454-8862-99b2f33bd437}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="sgx-login.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="sgx-login-enclave_u.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="sgx-login.cpp">
+    <ClCompile Include="Login.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="sgx-login-enclave_u.c">
+    <ClCompile Include="LoginEnclave_u.c">
       <Filter>Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\sgx-login-enclave\sgx-login-enclave.edl">
+    <ClInclude Include="Login.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="LoginEnclave_u.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\LoginEnclave\LoginEnclave.edl">
       <Filter>Source Files</Filter>
     </CustomBuild>
   </ItemGroup>

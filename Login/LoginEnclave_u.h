@@ -1,5 +1,5 @@
-#ifndef SGX_LOGIN_ENCLAVE_U_H__
-#define SGX_LOGIN_ENCLAVE_U_H__
+#ifndef LOGINENCLAVE_U_H__
+#define LOGINENCLAVE_U_H__
 
 #include <stdint.h>
 #include <wchar.h>
@@ -34,8 +34,15 @@ int SGX_UBRIDGE(SGX_CDECL, sgx_thread_setwait_untrusted_events_ocall, (const voi
 #define SGX_THREAD_SET_MULTIPLE_UNTRUSTED_EVENTS_OCALL_DEFINED__
 int SGX_UBRIDGE(SGX_CDECL, sgx_thread_set_multiple_untrusted_events_ocall, (const void** waiters, size_t total));
 #endif
+#ifndef OCALL_PRINT_STRING_DEFINED__
+#define OCALL_PRINT_STRING_DEFINED__
+void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_print_string, (const char* str));
+#endif
 
-sgx_status_t sgx_login(sgx_enclave_id_t eid, int* retval);
+sgx_status_t ecall_login(sgx_enclave_id_t eid, int* retval, char* username, char* password);
+sgx_status_t ecall_register(sgx_enclave_id_t eid, char* username, char* password);
+sgx_status_t ecall_logout(sgx_enclave_id_t eid, int* token);
+sgx_status_t ecall_verify(sgx_enclave_id_t eid, int* retval, int* token);
 
 #ifdef __cplusplus
 }

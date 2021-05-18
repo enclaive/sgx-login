@@ -29,7 +29,7 @@
     <ClInclude Include="$(projectname)_t.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="sgx-login-enclave.h">
+    <ClInclude Include="LoginEnclave.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,7 +44,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="sgx-login-enclave_private.pem">
+    <None Include="LoginEnclave_private.pem">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
