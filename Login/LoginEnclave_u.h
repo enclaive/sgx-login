@@ -39,10 +39,10 @@ int SGX_UBRIDGE(SGX_CDECL, sgx_thread_set_multiple_untrusted_events_ocall, (cons
 void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_print_string, (const char* str));
 #endif
 
-sgx_status_t ecall_login(sgx_enclave_id_t eid, int* retval, char* username, char* password);
+sgx_status_t ecall_login(sgx_enclave_id_t eid, char* username, char* password);
 sgx_status_t ecall_register(sgx_enclave_id_t eid, char* username, char* password);
-sgx_status_t ecall_logout(sgx_enclave_id_t eid, int* token);
-sgx_status_t ecall_verify(sgx_enclave_id_t eid, int* retval, int* token);
+sgx_status_t ecall_logout(sgx_enclave_id_t eid, char* token);
+sgx_status_t ecall_verify(sgx_enclave_id_t eid, char* token);
 
 #ifdef __cplusplus
 }

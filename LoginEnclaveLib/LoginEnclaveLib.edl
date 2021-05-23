@@ -3,10 +3,10 @@ enclave {
     
     trusted {
         /* define ECALLs here. */
-        public int ecall_login([in] char* username,[in] char* password);
+        public void ecall_login([in] char* username,[in] char* password);
         public void ecall_register([in] char* username, [in] char* password);
-        public void ecall_logout([in] int* token);
-        public int ecall_verify([in] int* token);
+        public void ecall_logout([in] char* token);
+        public void ecall_verify([in] char* token);
     };
 
     untrusted {

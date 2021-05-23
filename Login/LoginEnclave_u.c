@@ -2,7 +2,6 @@
 #include <errno.h>
 
 typedef struct ms_ecall_login_t {
-	int ms_retval;
 	char* ms_username;
 	char* ms_password;
 } ms_ecall_login_t;
@@ -13,12 +12,11 @@ typedef struct ms_ecall_register_t {
 } ms_ecall_register_t;
 
 typedef struct ms_ecall_logout_t {
-	int* ms_token;
+	char* ms_token;
 } ms_ecall_logout_t;
 
 typedef struct ms_ecall_verify_t {
-	int ms_retval;
-	int* ms_token;
+	char* ms_token;
 } ms_ecall_verify_t;
 
 typedef struct ms_sgx_oc_cpuidex_t {
@@ -116,14 +114,13 @@ static const struct {
 	}
 };
 
-sgx_status_t ecall_login(sgx_enclave_id_t eid, int* retval, char* username, char* password)
+sgx_status_t ecall_login(sgx_enclave_id_t eid, char* username, char* password)
 {
 	sgx_status_t status;
 	ms_ecall_login_t ms;
 	ms.ms_username = username;
 	ms.ms_password = password;
 	status = sgx_ecall(eid, 0, &ocall_table_LoginEnclave, &ms);
-	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }
 
@@ -137,7 +134,7 @@ sgx_status_t ecall_register(sgx_enclave_id_t eid, char* username, char* password
 	return status;
 }
 
-sgx_status_t ecall_logout(sgx_enclave_id_t eid, int* token)
+sgx_status_t ecall_logout(sgx_enclave_id_t eid, char* token)
 {
 	sgx_status_t status;
 	ms_ecall_logout_t ms;
@@ -146,13 +143,12 @@ sgx_status_t ecall_logout(sgx_enclave_id_t eid, int* token)
 	return status;
 }
 
-sgx_status_t ecall_verify(sgx_enclave_id_t eid, int* retval, int* token)
+sgx_status_t ecall_verify(sgx_enclave_id_t eid, char* token)
 {
 	sgx_status_t status;
 	ms_ecall_verify_t ms;
 	ms.ms_token = token;
 	status = sgx_ecall(eid, 3, &ocall_table_LoginEnclave, &ms);
-	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }
 

@@ -28,7 +28,6 @@
 
 
 typedef struct ms_ecall_login_t {
-	int ms_retval;
 	char* ms_username;
 	char* ms_password;
 } ms_ecall_login_t;
@@ -39,12 +38,11 @@ typedef struct ms_ecall_register_t {
 } ms_ecall_register_t;
 
 typedef struct ms_ecall_logout_t {
-	int* ms_token;
+	char* ms_token;
 } ms_ecall_logout_t;
 
 typedef struct ms_ecall_verify_t {
-	int ms_retval;
-	int* ms_token;
+	char* ms_token;
 } ms_ecall_verify_t;
 
 typedef struct ms_sgx_oc_cpuidex_t {
@@ -146,7 +144,7 @@ static sgx_status_t SGX_CDECL sgx_ecall_login(void* pms)
 
 	}
 
-	ms->ms_retval = ecall_login(_in_username, _in_password);
+	ecall_login(_in_username, _in_password);
 
 err:
 	if (_in_username) free(_in_username);
@@ -232,9 +230,9 @@ static sgx_status_t SGX_CDECL sgx_ecall_logout(void* pms)
 	sgx_lfence();
 	ms_ecall_logout_t* ms = SGX_CAST(ms_ecall_logout_t*, pms);
 	sgx_status_t status = SGX_SUCCESS;
-	int* _tmp_token = ms->ms_token;
-	size_t _len_token = sizeof(int);
-	int* _in_token = NULL;
+	char* _tmp_token = ms->ms_token;
+	size_t _len_token = sizeof(char);
+	char* _in_token = NULL;
 
 	CHECK_UNIQUE_POINTER(_tmp_token, _len_token);
 
@@ -249,7 +247,7 @@ static sgx_status_t SGX_CDECL sgx_ecall_logout(void* pms)
 			status = SGX_ERROR_INVALID_PARAMETER;
 			goto err;
 		}
-		_in_token = (int*)malloc(_len_token);
+		_in_token = (char*)malloc(_len_token);
 		if (_in_token == NULL) {
 			status = SGX_ERROR_OUT_OF_MEMORY;
 			goto err;
@@ -278,9 +276,9 @@ static sgx_status_t SGX_CDECL sgx_ecall_verify(void* pms)
 	sgx_lfence();
 	ms_ecall_verify_t* ms = SGX_CAST(ms_ecall_verify_t*, pms);
 	sgx_status_t status = SGX_SUCCESS;
-	int* _tmp_token = ms->ms_token;
-	size_t _len_token = sizeof(int);
-	int* _in_token = NULL;
+	char* _tmp_token = ms->ms_token;
+	size_t _len_token = sizeof(char);
+	char* _in_token = NULL;
 
 	CHECK_UNIQUE_POINTER(_tmp_token, _len_token);
 
@@ -295,7 +293,7 @@ static sgx_status_t SGX_CDECL sgx_ecall_verify(void* pms)
 			status = SGX_ERROR_INVALID_PARAMETER;
 			goto err;
 		}
-		_in_token = (int*)malloc(_len_token);
+		_in_token = (char*)malloc(_len_token);
 		if (_in_token == NULL) {
 			status = SGX_ERROR_OUT_OF_MEMORY;
 			goto err;
@@ -308,7 +306,7 @@ static sgx_status_t SGX_CDECL sgx_ecall_verify(void* pms)
 
 	}
 
-	ms->ms_retval = ecall_verify(_in_token);
+	ecall_verify(_in_token);
 
 err:
 	if (_in_token) free(_in_token);

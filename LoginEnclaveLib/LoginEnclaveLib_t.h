@@ -13,10 +13,10 @@
 extern "C" {
 #endif
 
-int ecall_login(char* username, char* password);
+void ecall_login(char* username, char* password);
 void ecall_register(char* username, char* password);
-void ecall_logout(int* token);
-int ecall_verify(int* token);
+void ecall_logout(char* token);
+void ecall_verify(char* token);
 
 sgx_status_t SGX_CDECL ocall_print_string(const char* str);
 sgx_status_t SGX_CDECL sgx_oc_cpuidex(int cpuinfo[4], int leaf, int subleaf);

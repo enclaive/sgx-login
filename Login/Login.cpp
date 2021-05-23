@@ -2,6 +2,7 @@
 //
 
 #include <iostream>
+#include <string> // To use string
 #include "sgx_urts.h"
 #include "Login.h"
 #include "LoginEnclave_u.h"
@@ -141,6 +142,7 @@ int SGX_CDECL main(int argc, char* argv[])
     std::cout << "Hello World!\n";
     char username[BUFSIZ] = { 'test' };
     char password[BUFSIZ] = { "password" };
+    char usernameTest[BUFSIZ] = { 'nope' };
 
     /* Initialize the enclave */
     if (initialize_enclave() < 0) {
@@ -149,7 +151,37 @@ int SGX_CDECL main(int argc, char* argv[])
         return -1;
     }
 
-    ecall_register(global_eid, username, password);
+    char* user1 = new char[512];
+    char* pass1 = new char[512];
+
+    std::cout << "Login: \n";
+    std::cout << "Username: ";
+    std::cin >> user1;
+
+    std::cout << "Password: ";
+    std::cin >> pass1;
+
+    std::cout << "\n";
+
+    ecall_register(global_eid, user1, pass1);
+    ecall_register(global_eid, user1, pass1);
+
+       
+    ecall_login(global_eid, user1, pass1);
+
+    char* user2 = new char[512];
+    char* pass2 = new char[512];
+
+    std::cout << "Login: \n";
+    std::cout << "Username: ";
+    std::cin >> user2;
+
+    std::cout << "Password: ";
+    std::cin >> pass2;
+
+    std::cout << "\n";
+
+    ecall_login(global_eid, user2, pass2);
 
     sgx_destroy_enclave(global_eid);
 
