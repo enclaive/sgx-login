@@ -9,13 +9,6 @@
 #include "Sealing.h"
 
 
-// 0: Username, 1: Password
-std::list<std::tuple<char*, char*>> authenticationList;
-// 0: Username, 2: Token
-std::list<std::tuple<char*, char*>> tokenList;
-
-// Check if username and password is correct, send 0 or 1 back
-
 int ecall_login_user(const user_t* user, size_t user_size) {
 	
 	sgx_status_t ocall_status, sealing_status;
@@ -32,7 +25,7 @@ int ecall_login_user(const user_t* user, size_t user_size) {
 	}
 
 
-	// 3. unseal wallet
+	// 2. unseal user
 	uint32_t plaintext_size = sizeof(users_t);
 	users_t* users = (users_t*)malloc(plaintext_size);
 	sealing_status = unseal_users((sgx_sealed_data_t*)sealed_data, users, plaintext_size);
@@ -44,18 +37,15 @@ int ecall_login_user(const user_t* user, size_t user_size) {
 	}
 
 	size_t users_size = users->size;
-	// 5. verify login
+	// 3. verify login
 	for (int i = 0; i < users_size; ++i) {
-
-	
-
 		if (strcmp(users->users[i].username, user->username) == 0 && strcmp(users->users[i].password, user->password) == 0) {
-			ocall_print_string("Login successfull");
-			users->users[i].logged = true;
+			users->users[i].logged = 0;
+			ocall_print_string("User was logged in successfully");
 		}
 	}
 
-	// 6. seal users
+	// 4. seal users
 	sealed_data = (uint8_t*)malloc(sealed_size);
 	sealing_status = seal_users(users, (sgx_sealed_data_t*)sealed_data, sealed_size);
 	free(users);
@@ -66,7 +56,7 @@ int ecall_login_user(const user_t* user, size_t user_size) {
 		return -1;
 	}
 
-	// 7. save users
+	// 5. save users
 	ocall_status = ocall_save_users(&ocall_ret, sealed_data, sealed_size);
 	free(sealed_data);
 	if (ocall_ret != 0 || ocall_status != SGX_SUCCESS) {
@@ -77,43 +67,12 @@ int ecall_login_user(const user_t* user, size_t user_size) {
 	return 0;
 }
 
-void ecall_register(char* username, char* password) {
-    // First check if username already exists
-    for (std::tuple<char*, char*> n : authenticationList) {
-		if (*std::get<0>(n) == *username) {
-			ocall_print_string("Username already exist\n");
-			return;
-		}
-    }
-
-	// Push username and password to authentication list
-	char enclaveUsername = *username;
-	char enclavePassword = *password;
-	authenticationList.push_back(std::make_tuple(&enclaveUsername, &enclavePassword));
-
-	ocall_print_string("Register succesfull\n");
-}
-
-void ecall_logout(char* token) {
-	//logout
-
-	// send message if logout was successfull
-	//ocall_print_string("Logout erfolgreich");
-	ocall_print_string("Logout erfolgreich!");
-}
-
-void ecall_verify(char* token) {
-	
-	ocall_print_string("Token korrekt!");
-}
-
-
-int ecall_add_user(const user_t* user, size_t user_size) {
+int ecall_register_user(const user_t* user, size_t user_size) {
 
 	sgx_status_t ocall_status, sealing_status;
 	int ocall_ret;
 
-	// 1. load user
+	// 1. load users
 	size_t sealed_size = sizeof(sgx_sealed_data_t) + sizeof(users_t);
 	uint8_t* sealed_data = (uint8_t*)malloc(sealed_size);
 	ocall_status = ocall_load_users(&ocall_ret, sealed_data, sealed_size);
@@ -123,7 +82,7 @@ int ecall_add_user(const user_t* user, size_t user_size) {
 	}
 	
 
-	// 3. unseal wallet
+	// 2. unseal users
 	uint32_t plaintext_size = sizeof(users_t);
 	users_t* users = (users_t*)malloc(plaintext_size);
 	sealing_status = unseal_users((sgx_sealed_data_t*)sealed_data, users, plaintext_size);
@@ -133,7 +92,7 @@ int ecall_add_user(const user_t* user, size_t user_size) {
 		return -1;
 	}
 
-	// 4. check input length
+	// 3. check input length
 	if (strlen(user->username) + 1 > MAX_ITEM_SIZE ||
 		strlen(user->password) + 1 > MAX_ITEM_SIZE
 		) {
@@ -141,8 +100,18 @@ int ecall_add_user(const user_t* user, size_t user_size) {
 		return -1;
 	}
 
-	// 5. add item to the wallet
+	// 4. check if username already exist
+
 	size_t users_size = users->size;
+	// 3. verify login
+	for (int i = 0; i < users_size; ++i) {
+		if (strcmp(users->users[i].username, user->username) == 0){
+			ocall_print_string("Username already exists! \n");
+		return -1;
+	}
+}
+
+	// 5. add user to users
 	if (users_size >= MAX_ITEMS) {
 		free(users);
 		return -1;
@@ -151,7 +120,7 @@ int ecall_add_user(const user_t* user, size_t user_size) {
 	++users->size;
 
 
-	// 6. seal wallet
+	// 6. seal users
 	sealed_data = (uint8_t*)malloc(sealed_size);
 	sealing_status = seal_users(users, (sgx_sealed_data_t*)sealed_data, sealed_size);
 	free(users);
@@ -161,7 +130,7 @@ int ecall_add_user(const user_t* user, size_t user_size) {
 		return -1;
 	}
 
-	// 7. save wallet
+	// 7. save users
 	ocall_status = ocall_save_users(&ocall_ret, sealed_data, sealed_size);
 	free(sealed_data);
 	if (ocall_ret != 0 || ocall_status != SGX_SUCCESS) {
@@ -175,20 +144,20 @@ int ecall_create_users(const char* master_password) {
 	sgx_status_t ocall_status, sealing_status;
 	int ocall_ret;
 
-	// 2. abort if wallet already exist
+	// 1. abort if users already exist
 	ocall_status = ocall_is_users(&ocall_ret);
 	if (ocall_ret != 0) {
 		return -1;
 	}
 
 
-	// 3. create new wallet
+	// 2. create new users
 	users_t* users = (users_t*)malloc(sizeof(users_t));
 	users->size = 0;
 	strncpy(users->master_password, master_password, strlen(master_password) + 1);
 
 
-	// 4. seal wallet
+	// 3. seal users
 	size_t sealed_size = sizeof(sgx_sealed_data_t) + sizeof(users_t);
 	uint8_t* sealed_data = (uint8_t*)malloc(sealed_size);
 	sealing_status = seal_users(users, (sgx_sealed_data_t*)sealed_data, sealed_size);
@@ -199,13 +168,107 @@ int ecall_create_users(const char* master_password) {
 	}
 
 
-	// 5. save wallet
+	// 4. save users
 	ocall_status = ocall_save_users(&ocall_ret, sealed_data, sealed_size);
 	free(sealed_data);
 	if (ocall_ret != 0 || ocall_status != SGX_SUCCESS) {
 		return -1;
 	}
 
-	// 6. exit enclave
 	return 0;
 }
+
+int ecall_logout_user(char* username, size_t username_size) {
+	sgx_status_t ocall_status, sealing_status;
+	int ocall_ret;
+	// 1. load users
+	size_t sealed_size = sizeof(sgx_sealed_data_t) + sizeof(users_t);
+	uint8_t* sealed_data = (uint8_t*)malloc(sealed_size);
+	ocall_status = ocall_load_users(&ocall_ret, sealed_data, sealed_size);
+	if (ocall_ret != 0 || ocall_status != SGX_SUCCESS) {
+		free(sealed_data);
+		return -1;
+	}
+
+	// 2. unseal users
+	uint32_t plaintext_size = sizeof(users_t);
+	users_t* users = (users_t*)malloc(plaintext_size);
+	sealing_status = unseal_users((sgx_sealed_data_t*)sealed_data, users, plaintext_size);
+	free(sealed_data);
+	if (sealing_status != SGX_SUCCESS) {
+		free(users);
+		return -1;
+	}
+
+	//3. get user by username
+	size_t users_size = users->size;
+	for (int i = 0; i < users_size; ++i) {
+		if (strcmp(users->users[i].username, username) == 0) {
+			if (users->users[i].logged == 0) {
+				users->users[i].logged = -1;
+				ocall_print_string("Logout was successful.\n");
+			}
+			else {
+				ocall_print_string("User not logged in.\n");
+				return -1;
+			}
+		}
+	}
+
+	// 4. seal users
+	sealed_data = (uint8_t*)malloc(sealed_size);
+	sealing_status = seal_users(users, (sgx_sealed_data_t*)sealed_data, sealed_size);
+	free(users);
+	if (sealing_status != SGX_SUCCESS) {
+		free(users);
+		free(sealed_data);
+		ocall_print_string("Failed to seal users");
+		return -1;
+	}
+
+	// 5. save users
+	ocall_status = ocall_save_users(&ocall_ret, sealed_data, sealed_size);
+	free(sealed_data);
+	if (ocall_ret != 0 || ocall_status != SGX_SUCCESS) {
+		ocall_print_string("Failed so save Users");
+		return -1;
+	}
+
+	return 0;
+}
+
+int ecall_verify_user(char* username, size_t username_size) {
+	sgx_status_t ocall_status, sealing_status;
+	int ocall_ret;
+
+	// 1. load users
+	size_t sealed_size = sizeof(sgx_sealed_data_t) + sizeof(users_t);
+	uint8_t* sealed_data = (uint8_t*)malloc(sealed_size);
+	ocall_status = ocall_load_users(&ocall_ret, sealed_data, sealed_size);
+	if (ocall_ret != 0 || ocall_status != SGX_SUCCESS) {
+		free(sealed_data);
+		return -1;
+	}
+
+	// 2. unseal users
+	uint32_t plaintext_size = sizeof(users_t);
+	users_t* users = (users_t*)malloc(plaintext_size);
+	sealing_status = unseal_users((sgx_sealed_data_t*)sealed_data, users, plaintext_size);
+	free(sealed_data);
+	if (sealing_status != SGX_SUCCESS) {
+		free(users);
+		return -1;
+	}
+
+	//3. get user by username
+	size_t users_size = users->size;
+	for (int i = 0; i < users_size; ++i) {
+		if (strcmp(users->users[i].username, username) == 0) {
+			ocall_print_string("User exist! \n");
+			return 0;
+		}
+	}
+	ocall_print_string("No User found! \n");
+	return -1;
+}
+

@@ -10,13 +10,12 @@ enclave {
             [in, size=user_size] const user_t* user,  
             size_t user_size
         );
-        public void ecall_register([in] char* username, [in] char* password);
-        public void ecall_logout([in] char* token);
-        public void ecall_verify([in] char* token);
+        public int ecall_logout_user([in, size=username_size] char* username,  size_t username_size);
+        public int ecall_verify_user([in, size=username_size] char* username,  size_t username_size);
         public int ecall_create_users(
             [in, string]const char* master_password
         );
-        public int ecall_add_user(
+        public int ecall_register_user(
             [in, size=user_size]const user_t* user,
             size_t user_size
         );

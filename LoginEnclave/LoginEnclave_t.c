@@ -33,18 +33,17 @@ typedef struct ms_ecall_login_user_t {
 	size_t ms_user_size;
 } ms_ecall_login_user_t;
 
-typedef struct ms_ecall_register_t {
+typedef struct ms_ecall_logout_user_t {
+	int ms_retval;
 	char* ms_username;
-	char* ms_password;
-} ms_ecall_register_t;
+	size_t ms_username_size;
+} ms_ecall_logout_user_t;
 
-typedef struct ms_ecall_logout_t {
-	char* ms_token;
-} ms_ecall_logout_t;
-
-typedef struct ms_ecall_verify_t {
-	char* ms_token;
-} ms_ecall_verify_t;
+typedef struct ms_ecall_verify_user_t {
+	int ms_retval;
+	char* ms_username;
+	size_t ms_username_size;
+} ms_ecall_verify_user_t;
 
 typedef struct ms_ecall_create_users_t {
 	int ms_retval;
@@ -52,11 +51,11 @@ typedef struct ms_ecall_create_users_t {
 	size_t ms_master_password_len;
 } ms_ecall_create_users_t;
 
-typedef struct ms_ecall_add_user_t {
+typedef struct ms_ecall_register_user_t {
 	int ms_retval;
 	const user_t* ms_user;
 	size_t ms_user_size;
-} ms_ecall_add_user_t;
+} ms_ecall_register_user_t;
 
 typedef struct ms_sgx_oc_cpuidex_t {
 	int* ms_cpuinfo;
@@ -154,24 +153,21 @@ err:
 	return status;
 }
 
-static sgx_status_t SGX_CDECL sgx_ecall_register(void* pms)
+static sgx_status_t SGX_CDECL sgx_ecall_logout_user(void* pms)
 {
-	CHECK_REF_POINTER(pms, sizeof(ms_ecall_register_t));
+	CHECK_REF_POINTER(pms, sizeof(ms_ecall_logout_user_t));
 	//
 	// fence after pointer checks
 	//
 	sgx_lfence();
-	ms_ecall_register_t* ms = SGX_CAST(ms_ecall_register_t*, pms);
+	ms_ecall_logout_user_t* ms = SGX_CAST(ms_ecall_logout_user_t*, pms);
 	sgx_status_t status = SGX_SUCCESS;
 	char* _tmp_username = ms->ms_username;
-	size_t _len_username = sizeof(char);
+	size_t _tmp_username_size = ms->ms_username_size;
+	size_t _len_username = _tmp_username_size;
 	char* _in_username = NULL;
-	char* _tmp_password = ms->ms_password;
-	size_t _len_password = sizeof(char);
-	char* _in_password = NULL;
 
 	CHECK_UNIQUE_POINTER(_tmp_username, _len_username);
-	CHECK_UNIQUE_POINTER(_tmp_password, _len_password);
 
 	//
 	// fence after pointer checks
@@ -196,122 +192,58 @@ static sgx_status_t SGX_CDECL sgx_ecall_register(void* pms)
 		}
 
 	}
-	if (_tmp_password != NULL && _len_password != 0) {
-		if ( _len_password % sizeof(*_tmp_password) != 0)
-		{
-			status = SGX_ERROR_INVALID_PARAMETER;
-			goto err;
-		}
-		_in_password = (char*)malloc(_len_password);
-		if (_in_password == NULL) {
-			status = SGX_ERROR_OUT_OF_MEMORY;
-			goto err;
-		}
 
-		if (memcpy_s(_in_password, _len_password, _tmp_password, _len_password)) {
-			status = SGX_ERROR_UNEXPECTED;
-			goto err;
-		}
-
-	}
-
-	ecall_register(_in_username, _in_password);
+	ms->ms_retval = ecall_logout_user(_in_username, _tmp_username_size);
 
 err:
 	if (_in_username) free(_in_username);
-	if (_in_password) free(_in_password);
 	return status;
 }
 
-static sgx_status_t SGX_CDECL sgx_ecall_logout(void* pms)
+static sgx_status_t SGX_CDECL sgx_ecall_verify_user(void* pms)
 {
-	CHECK_REF_POINTER(pms, sizeof(ms_ecall_logout_t));
+	CHECK_REF_POINTER(pms, sizeof(ms_ecall_verify_user_t));
 	//
 	// fence after pointer checks
 	//
 	sgx_lfence();
-	ms_ecall_logout_t* ms = SGX_CAST(ms_ecall_logout_t*, pms);
+	ms_ecall_verify_user_t* ms = SGX_CAST(ms_ecall_verify_user_t*, pms);
 	sgx_status_t status = SGX_SUCCESS;
-	char* _tmp_token = ms->ms_token;
-	size_t _len_token = sizeof(char);
-	char* _in_token = NULL;
+	char* _tmp_username = ms->ms_username;
+	size_t _tmp_username_size = ms->ms_username_size;
+	size_t _len_username = _tmp_username_size;
+	char* _in_username = NULL;
 
-	CHECK_UNIQUE_POINTER(_tmp_token, _len_token);
+	CHECK_UNIQUE_POINTER(_tmp_username, _len_username);
 
 	//
 	// fence after pointer checks
 	//
 	sgx_lfence();
 
-	if (_tmp_token != NULL && _len_token != 0) {
-		if ( _len_token % sizeof(*_tmp_token) != 0)
+	if (_tmp_username != NULL && _len_username != 0) {
+		if ( _len_username % sizeof(*_tmp_username) != 0)
 		{
 			status = SGX_ERROR_INVALID_PARAMETER;
 			goto err;
 		}
-		_in_token = (char*)malloc(_len_token);
-		if (_in_token == NULL) {
+		_in_username = (char*)malloc(_len_username);
+		if (_in_username == NULL) {
 			status = SGX_ERROR_OUT_OF_MEMORY;
 			goto err;
 		}
 
-		if (memcpy_s(_in_token, _len_token, _tmp_token, _len_token)) {
+		if (memcpy_s(_in_username, _len_username, _tmp_username, _len_username)) {
 			status = SGX_ERROR_UNEXPECTED;
 			goto err;
 		}
 
 	}
 
-	ecall_logout(_in_token);
+	ms->ms_retval = ecall_verify_user(_in_username, _tmp_username_size);
 
 err:
-	if (_in_token) free(_in_token);
-	return status;
-}
-
-static sgx_status_t SGX_CDECL sgx_ecall_verify(void* pms)
-{
-	CHECK_REF_POINTER(pms, sizeof(ms_ecall_verify_t));
-	//
-	// fence after pointer checks
-	//
-	sgx_lfence();
-	ms_ecall_verify_t* ms = SGX_CAST(ms_ecall_verify_t*, pms);
-	sgx_status_t status = SGX_SUCCESS;
-	char* _tmp_token = ms->ms_token;
-	size_t _len_token = sizeof(char);
-	char* _in_token = NULL;
-
-	CHECK_UNIQUE_POINTER(_tmp_token, _len_token);
-
-	//
-	// fence after pointer checks
-	//
-	sgx_lfence();
-
-	if (_tmp_token != NULL && _len_token != 0) {
-		if ( _len_token % sizeof(*_tmp_token) != 0)
-		{
-			status = SGX_ERROR_INVALID_PARAMETER;
-			goto err;
-		}
-		_in_token = (char*)malloc(_len_token);
-		if (_in_token == NULL) {
-			status = SGX_ERROR_OUT_OF_MEMORY;
-			goto err;
-		}
-
-		if (memcpy_s(_in_token, _len_token, _tmp_token, _len_token)) {
-			status = SGX_ERROR_UNEXPECTED;
-			goto err;
-		}
-
-	}
-
-	ecall_verify(_in_token);
-
-err:
-	if (_in_token) free(_in_token);
+	if (_in_username) free(_in_username);
 	return status;
 }
 
@@ -362,14 +294,14 @@ err:
 	return status;
 }
 
-static sgx_status_t SGX_CDECL sgx_ecall_add_user(void* pms)
+static sgx_status_t SGX_CDECL sgx_ecall_register_user(void* pms)
 {
-	CHECK_REF_POINTER(pms, sizeof(ms_ecall_add_user_t));
+	CHECK_REF_POINTER(pms, sizeof(ms_ecall_register_user_t));
 	//
 	// fence after pointer checks
 	//
 	sgx_lfence();
-	ms_ecall_add_user_t* ms = SGX_CAST(ms_ecall_add_user_t*, pms);
+	ms_ecall_register_user_t* ms = SGX_CAST(ms_ecall_register_user_t*, pms);
 	sgx_status_t status = SGX_SUCCESS;
 	const user_t* _tmp_user = ms->ms_user;
 	size_t _tmp_user_size = ms->ms_user_size;
@@ -397,7 +329,7 @@ static sgx_status_t SGX_CDECL sgx_ecall_add_user(void* pms)
 
 	}
 
-	ms->ms_retval = ecall_add_user((const user_t*)_in_user, _tmp_user_size);
+	ms->ms_retval = ecall_register_user((const user_t*)_in_user, _tmp_user_size);
 
 err:
 	if (_in_user) free(_in_user);
@@ -406,34 +338,33 @@ err:
 
 SGX_EXTERNC const struct {
 	size_t nr_ecall;
-	struct {void* call_addr; uint8_t is_priv; uint8_t is_switchless;} ecall_table[6];
+	struct {void* call_addr; uint8_t is_priv; uint8_t is_switchless;} ecall_table[5];
 } g_ecall_table = {
-	6,
+	5,
 	{
 		{(void*)(uintptr_t)sgx_ecall_login_user, 0, 0},
-		{(void*)(uintptr_t)sgx_ecall_register, 0, 0},
-		{(void*)(uintptr_t)sgx_ecall_logout, 0, 0},
-		{(void*)(uintptr_t)sgx_ecall_verify, 0, 0},
+		{(void*)(uintptr_t)sgx_ecall_logout_user, 0, 0},
+		{(void*)(uintptr_t)sgx_ecall_verify_user, 0, 0},
 		{(void*)(uintptr_t)sgx_ecall_create_users, 0, 0},
-		{(void*)(uintptr_t)sgx_ecall_add_user, 0, 0},
+		{(void*)(uintptr_t)sgx_ecall_register_user, 0, 0},
 	}
 };
 
 SGX_EXTERNC const struct {
 	size_t nr_ocall;
-	uint8_t entry_table[9][6];
+	uint8_t entry_table[9][5];
 } g_dyn_entry_table = {
 	9,
 	{
-		{0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, },
 	}
 };
 

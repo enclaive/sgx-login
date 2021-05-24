@@ -3,11 +3,10 @@
 #include "../Include/user.h"
 
 //trusted E-Calls
-void ecall_register(char* username, char* password);
 int ecall_login_user(const user_t* user, size_t user_size);
-void ecall_logout(int* token);
-int ecall_verify(int* token);
-int ecall_add_user(const user_t* users, size_t user_size);
+int ecall_logout_user(char* username, size_t username_size);
+int ecall_verify_user(char* username, size_t username_size);
+int ecall_register_user(const user_t* users, size_t user_size);
 int ecall_create_users(const char* master_password);
 
 //untrusted O-Calls

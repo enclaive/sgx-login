@@ -7,18 +7,17 @@ typedef struct ms_ecall_login_user_t {
 	size_t ms_user_size;
 } ms_ecall_login_user_t;
 
-typedef struct ms_ecall_register_t {
+typedef struct ms_ecall_logout_user_t {
+	int ms_retval;
 	char* ms_username;
-	char* ms_password;
-} ms_ecall_register_t;
+	size_t ms_username_size;
+} ms_ecall_logout_user_t;
 
-typedef struct ms_ecall_logout_t {
-	char* ms_token;
-} ms_ecall_logout_t;
-
-typedef struct ms_ecall_verify_t {
-	char* ms_token;
-} ms_ecall_verify_t;
+typedef struct ms_ecall_verify_user_t {
+	int ms_retval;
+	char* ms_username;
+	size_t ms_username_size;
+} ms_ecall_verify_user_t;
 
 typedef struct ms_ecall_create_users_t {
 	int ms_retval;
@@ -26,11 +25,11 @@ typedef struct ms_ecall_create_users_t {
 	size_t ms_master_password_len;
 } ms_ecall_create_users_t;
 
-typedef struct ms_ecall_add_user_t {
+typedef struct ms_ecall_register_user_t {
 	int ms_retval;
 	const user_t* ms_user;
 	size_t ms_user_size;
-} ms_ecall_add_user_t;
+} ms_ecall_register_user_t;
 
 typedef struct ms_sgx_oc_cpuidex_t {
 	int* ms_cpuinfo;
@@ -181,31 +180,25 @@ sgx_status_t ecall_login_user(sgx_enclave_id_t eid, int* retval, const user_t* u
 	return status;
 }
 
-sgx_status_t ecall_register(sgx_enclave_id_t eid, char* username, char* password)
+sgx_status_t ecall_logout_user(sgx_enclave_id_t eid, int* retval, char* username, size_t username_size)
 {
 	sgx_status_t status;
-	ms_ecall_register_t ms;
+	ms_ecall_logout_user_t ms;
 	ms.ms_username = username;
-	ms.ms_password = password;
+	ms.ms_username_size = username_size;
 	status = sgx_ecall(eid, 1, &ocall_table_LoginEnclave, &ms);
+	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }
 
-sgx_status_t ecall_logout(sgx_enclave_id_t eid, char* token)
+sgx_status_t ecall_verify_user(sgx_enclave_id_t eid, int* retval, char* username, size_t username_size)
 {
 	sgx_status_t status;
-	ms_ecall_logout_t ms;
-	ms.ms_token = token;
+	ms_ecall_verify_user_t ms;
+	ms.ms_username = username;
+	ms.ms_username_size = username_size;
 	status = sgx_ecall(eid, 2, &ocall_table_LoginEnclave, &ms);
-	return status;
-}
-
-sgx_status_t ecall_verify(sgx_enclave_id_t eid, char* token)
-{
-	sgx_status_t status;
-	ms_ecall_verify_t ms;
-	ms.ms_token = token;
-	status = sgx_ecall(eid, 3, &ocall_table_LoginEnclave, &ms);
+	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }
 
@@ -215,18 +208,18 @@ sgx_status_t ecall_create_users(sgx_enclave_id_t eid, int* retval, const char* m
 	ms_ecall_create_users_t ms;
 	ms.ms_master_password = master_password;
 	ms.ms_master_password_len = master_password ? strlen(master_password) + 1 : 0;
-	status = sgx_ecall(eid, 4, &ocall_table_LoginEnclave, &ms);
+	status = sgx_ecall(eid, 3, &ocall_table_LoginEnclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }
 
-sgx_status_t ecall_add_user(sgx_enclave_id_t eid, int* retval, const user_t* user, size_t user_size)
+sgx_status_t ecall_register_user(sgx_enclave_id_t eid, int* retval, const user_t* user, size_t user_size)
 {
 	sgx_status_t status;
-	ms_ecall_add_user_t ms;
+	ms_ecall_register_user_t ms;
 	ms.ms_user = user;
 	ms.ms_user_size = user_size;
-	status = sgx_ecall(eid, 5, &ocall_table_LoginEnclave, &ms);
+	status = sgx_ecall(eid, 4, &ocall_table_LoginEnclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }

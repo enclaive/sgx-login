@@ -141,12 +141,7 @@ int SGX_CDECL main(int argc, char* argv[])
     (void)(argv);
 
     sgx_status_t ecall_status, enclave_status;
-    int updated, ret;
-
-    std::cout << "Hello World!\n";
-    char username[BUFSIZ] = { 'test' };
-    char password[BUFSIZ] = { "password" };
-    char usernameTest[BUFSIZ] = { 'nope' };
+    int updated, ret, runnning = 0;
 
     /* Initialize the enclave */
     if (initialize_enclave() < 0) {
@@ -155,71 +150,100 @@ int SGX_CDECL main(int argc, char* argv[])
         return -1;
     }
 
-    char* user1 = new char[512];
-    char* pass1 = new char[512];
-
-    std::cout << "Register: \n";
-    std::cout << "Username: ";
-    std::cin >> user1;
-
-    std::cout << "Password: ";
-    std::cin >> pass1;
-
-    std::cout << "\n";
-    
+    /* Check for users init*/
     ecall_status = ecall_create_users(global_eid, &ret, "test");
     if (ecall_status != SGX_SUCCESS || ret == -1) {
-        printf("Fail to create new users.");
+        printf("Users could not be created or already exist.");
+        printf("\n");
     }
     else {
         printf("Users successfully created.");
     }
+    printf("Type in 'help' to get more information.\n");
+    /* Wait for user Inputs*/
+    while (runnning != -1) {
+        char* userInput = new char[512];
+        std::cin >> userInput;
 
-    //user hinzufügen
-    user_t* new_user = (user_t*)malloc(sizeof(user_t));
+        if (strcmp(userInput, "help") == 0) {
+            printf("Type in Options: help, login, register, logout, verify.\n");
+            userInput = new char[512];
+        }
+        else if (strcmp(userInput, "register") == 0) {
+            char* user = new char[512];
+            char* pass = new char[512];
 
-    new_user->logged = 0;
-    strcpy_s(new_user->username, user1);
-    strcpy_s(new_user->password, pass1);
-    ecall_status = ecall_add_user(global_eid, &ret, new_user, sizeof(user_t));
-    if (ecall_status != SGX_SUCCESS || ret == -1) {
-        printf("Fail to add new item to wallet.");
+            std::cout << "Register: \n";
+            std::cout << "Type in Username (Press Enter to confirm): ";
+            std::cin >> user;
+
+            std::cout << "Type in Password (Press Enter to confirm): ";
+            std::cin >> pass;
+
+            std::cout << "\n";
+            user_t* new_user = (user_t*)malloc(sizeof(user_t));
+
+            new_user->logged = 0;
+            strcpy_s(new_user->username, user);
+            strcpy_s(new_user->password, pass);
+            ecall_status = ecall_register_user(global_eid, &ret, new_user, sizeof(user_t));
+            if (ecall_status != SGX_SUCCESS || ret == -1) {
+                printf("Fail to add new user to users.\n");
+            }
+            else {
+                printf("User successfully created.\n");
+            }
+            free(new_user);
+        }
+        else if (strcmp(userInput, "login") == 0) {
+            char* user = new char[512];
+            char* pass = new char[512];
+
+            std::cout << "Login: \n";
+            std::cout << "Type in Username (Press Enter to confirm): ";
+            std::cin >> user;
+
+            std::cout << "Type in Password (Press Enter to confirm): ";
+            std::cin >> pass;
+
+            std::cout << "\n";
+            user_t* new_user = (user_t*)malloc(sizeof(user_t));
+            new_user->logged = -1;
+            strcpy_s(new_user->username, user);
+            strcpy_s(new_user->password, pass);
+            ecall_status = ecall_login_user(global_eid, &ret, new_user, sizeof(user_t));
+            if (ecall_status != SGX_SUCCESS || ret == -1) {
+                printf("Fail to login with username.\n");
+            }
+
+        }
+        else if (strcmp(userInput, "logout") == 0) {
+            char* username = new char[512];
+
+            std::cout << "Logout: \n";
+            std::cout << "Type in Username for logout (Press Enter to confirm): ";
+            std::cin >> username;
+            ecall_status = ecall_logout_user(global_eid, &ret, username, sizeof(user_t));
+        }
+        else if (strcmp(userInput, "verify") == 0) {
+            char* username = new char[512];
+
+            std::cout << "Verify: \n";
+            std::cout << "Type in Username for Verify (Press Enter to confirm): ";
+            std::cin >> username;
+            ecall_status = ecall_verify_user(global_eid, &ret, username, sizeof(user_t));
+        }
+        else if (strcmp(userInput,"exit") == 0) {
+            runnning = -1;
+        }
+
+        userInput = new char[512];
     }
-    else {
-        printf("Item successfully added to the wallet.");
-    }
-    free(new_user);
-   // ecall_register(global_eid, user1, pass1);
-   // ecall_register(global_eid, user1, pass1);
 
-       
-   // ecall_login(global_eid, user1, pass1);
-    
-    char* user2 = new char[512];
-    char* pass2 = new char[512];
-
-    std::cout << "Login: \n";
-    std::cout << "Username: ";
-    std::cin >> user2;
-
-    std::cout << "Password: ";
-    std::cin >> pass2;
-
-    std::cout << "\n";
-
-    user_t* new_user2 = (user_t*)malloc(sizeof(user_t));
-
-    new_user2->logged = 0;
-    strcpy_s(new_user2->username, user2);
-    strcpy_s(new_user2->password, pass2);
-    ecall_login_user(global_eid, &ret, new_user2, sizeof(user_t));
-    
     sgx_destroy_enclave(global_eid);
-
+    
     printf("\n");
     printf("Info:Enclave successfully returned.\n");
-
-    printf("Enter a character before exit ...\n");
     getchar();
     return 0;
 }
@@ -254,18 +278,7 @@ int ocall_load_users(uint8_t* sealed_data, const size_t sealed_size)
 int ocall_is_users(void) 
 {
     std::ifstream file("User.seal", std::ios::in | std::ios::binary);
-    if (file.fail()) { return 0; } // failure means no users found
+    if (file.fail()) { return 0; }
     file.close();
     return 1;
 }
-
-// Programm ausführen: STRG+F5 oder Menüeintrag "Debuggen" > "Starten ohne Debuggen starten"
-// Programm debuggen: F5 oder "Debuggen" > Menü "Debuggen starten"
-
-// Tipps für den Einstieg: 
-//   1. Verwenden Sie das Projektmappen-Explorer-Fenster zum Hinzufügen/Verwalten von Dateien.
-//   2. Verwenden Sie das Team Explorer-Fenster zum Herstellen einer Verbindung mit der Quellcodeverwaltung.
-//   3. Verwenden Sie das Ausgabefenster, um die Buildausgabe und andere Nachrichten anzuzeigen.
-//   4. Verwenden Sie das Fenster "Fehlerliste", um Fehler anzuzeigen.
-//   5. Wechseln Sie zu "Projekt" > "Neues Element hinzufügen", um neue Codedateien zu erstellen, bzw. zu "Projekt" > "Vorhandenes Element hinzufügen", um dem Projekt vorhandene Codedateien hinzuzufügen.
-//   6. Um dieses Projekt später erneut zu öffnen, wechseln Sie zu "Datei" > "Öffnen" > "Projekt", und wählen Sie die SLN-Datei aus.

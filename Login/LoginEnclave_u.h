@@ -53,11 +53,10 @@ int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_is_users, (void));
 #endif
 
 sgx_status_t ecall_login_user(sgx_enclave_id_t eid, int* retval, const user_t* user, size_t user_size);
-sgx_status_t ecall_register(sgx_enclave_id_t eid, char* username, char* password);
-sgx_status_t ecall_logout(sgx_enclave_id_t eid, char* token);
-sgx_status_t ecall_verify(sgx_enclave_id_t eid, char* token);
+sgx_status_t ecall_logout_user(sgx_enclave_id_t eid, int* retval, char* username, size_t username_size);
+sgx_status_t ecall_verify_user(sgx_enclave_id_t eid, int* retval, char* username, size_t username_size);
 sgx_status_t ecall_create_users(sgx_enclave_id_t eid, int* retval, const char* master_password);
-sgx_status_t ecall_add_user(sgx_enclave_id_t eid, int* retval, const user_t* user, size_t user_size);
+sgx_status_t ecall_register_user(sgx_enclave_id_t eid, int* retval, const user_t* user, size_t user_size);
 
 #ifdef __cplusplus
 }

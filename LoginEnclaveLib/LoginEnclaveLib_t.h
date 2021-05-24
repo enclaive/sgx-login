@@ -15,11 +15,10 @@ extern "C" {
 #endif
 
 int ecall_login_user(const user_t* user, size_t user_size);
-void ecall_register(char* username, char* password);
-void ecall_logout(char* token);
-void ecall_verify(char* token);
+int ecall_logout_user(char* username, size_t username_size);
+int ecall_verify_user(char* username, size_t username_size);
 int ecall_create_users(const char* master_password);
-int ecall_add_user(const user_t* user, size_t user_size);
+int ecall_register_user(const user_t* user, size_t user_size);
 
 sgx_status_t SGX_CDECL ocall_print_string(const char* str);
 sgx_status_t SGX_CDECL ocall_save_users(int* retval, const uint8_t* sealed_data, size_t sealed_size);
