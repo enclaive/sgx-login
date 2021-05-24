@@ -27,11 +27,11 @@
 )
 
 
-typedef struct ms_ecall_login_t {
+typedef struct ms_ecall_login_user_t {
 	int ms_retval;
 	const user_t* ms_user;
 	size_t ms_user_size;
-} ms_ecall_login_t;
+} ms_ecall_login_user_t;
 
 typedef struct ms_ecall_register_t {
 	char* ms_username;
@@ -112,14 +112,14 @@ typedef struct ms_ocall_is_users_t {
 #pragma warning(disable: 4200)
 #endif
 
-static sgx_status_t SGX_CDECL sgx_ecall_login(void* pms)
+static sgx_status_t SGX_CDECL sgx_ecall_login_user(void* pms)
 {
-	CHECK_REF_POINTER(pms, sizeof(ms_ecall_login_t));
+	CHECK_REF_POINTER(pms, sizeof(ms_ecall_login_user_t));
 	//
 	// fence after pointer checks
 	//
 	sgx_lfence();
-	ms_ecall_login_t* ms = SGX_CAST(ms_ecall_login_t*, pms);
+	ms_ecall_login_user_t* ms = SGX_CAST(ms_ecall_login_user_t*, pms);
 	sgx_status_t status = SGX_SUCCESS;
 	const user_t* _tmp_user = ms->ms_user;
 	size_t _tmp_user_size = ms->ms_user_size;
@@ -147,7 +147,7 @@ static sgx_status_t SGX_CDECL sgx_ecall_login(void* pms)
 
 	}
 
-	ms->ms_retval = ecall_login((const user_t*)_in_user, _tmp_user_size);
+	ms->ms_retval = ecall_login_user((const user_t*)_in_user, _tmp_user_size);
 
 err:
 	if (_in_user) free(_in_user);
@@ -410,7 +410,7 @@ SGX_EXTERNC const struct {
 } g_ecall_table = {
 	6,
 	{
-		{(void*)(uintptr_t)sgx_ecall_login, 0, 0},
+		{(void*)(uintptr_t)sgx_ecall_login_user, 0, 0},
 		{(void*)(uintptr_t)sgx_ecall_register, 0, 0},
 		{(void*)(uintptr_t)sgx_ecall_logout, 0, 0},
 		{(void*)(uintptr_t)sgx_ecall_verify, 0, 0},

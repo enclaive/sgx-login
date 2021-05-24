@@ -8,13 +8,16 @@
 #include "sgx_tseal.h"
 #include "Sealing.h"
 
+
 // 0: Username, 1: Password
 std::list<std::tuple<char*, char*>> authenticationList;
 // 0: Username, 2: Token
 std::list<std::tuple<char*, char*>> tokenList;
 
 // Check if username and password is correct, send 0 or 1 back
-int ecall_login(user_t* user, size_t user_size) {
+
+int ecall_login_user(const user_t* user, size_t user_size) {
+	
 	sgx_status_t ocall_status, sealing_status;
 	int ocall_ret;
 
@@ -41,9 +44,12 @@ int ecall_login(user_t* user, size_t user_size) {
 	}
 
 	size_t users_size = users->size;
-	// 5. remove item from the wallet
-	for (int i = 0; i < users_size - 1; ++i) {
-		if (users->users[i].username == user->username && users->users[i].password == user->password) {
+	// 5. verify login
+	for (int i = 0; i < users_size; ++i) {
+
+	
+
+		if (strcmp(users->users[i].username, user->username) == 0 && strcmp(users->users[i].password, user->password) == 0) {
 			ocall_print_string("Login successfull");
 			users->users[i].logged = true;
 		}
@@ -67,6 +73,7 @@ int ecall_login(user_t* user, size_t user_size) {
 		ocall_print_string("Failed so save Users");
 		return -1;
 	}
+	
 	return 0;
 }
 
@@ -99,6 +106,7 @@ void ecall_verify(char* token) {
 	
 	ocall_print_string("Token korrekt!");
 }
+
 
 int ecall_add_user(const user_t* user, size_t user_size) {
 

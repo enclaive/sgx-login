@@ -212,7 +212,7 @@ int SGX_CDECL main(int argc, char* argv[])
     new_user2->logged = 0;
     strcpy_s(new_user2->username, user2);
     strcpy_s(new_user2->password, pass2);
-    ecall_login(global_eid, &ret, new_user2, sizeof(user_t));
+    ecall_login_user(global_eid, &ret, new_user2, sizeof(user_t));
     
     sgx_destroy_enclave(global_eid);
 

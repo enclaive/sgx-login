@@ -4,7 +4,7 @@
 
 //trusted E-Calls
 void ecall_register(char* username, char* password);
-int ecall_login(const user_t* user, size_t user_size);
+int ecall_login_user(const user_t* user, size_t user_size);
 void ecall_logout(int* token);
 int ecall_verify(int* token);
 int ecall_add_user(const user_t* users, size_t user_size);
