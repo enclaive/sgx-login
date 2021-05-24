@@ -16,6 +16,9 @@
       <UniqueIdentifier>{34dfbe7d-3c22-45cd-95ac-7f11b4d69449}</UniqueIdentifier>
       <Extensions>rc;xml;pem;</Extensions>
     </Filter>
+    <Filter Include="Sealing">
+      <UniqueIdentifier>{7e41ac91-0ed6-4939-ad17-7f699a099de5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(projectname)_t.c">
@@ -24,6 +27,9 @@
     <ClCompile Include="$(projectname).cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sealing.cpp">
+      <Filter>Sealing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(projectname)_t.h">
@@ -31,6 +37,9 @@
     </ClInclude>
     <ClInclude Include="LoginEnclave.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sealing.h">
+      <Filter>Sealing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

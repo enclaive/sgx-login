@@ -1,16 +1,36 @@
 enclave {
     from "sgx_tstdc.edl" import *;
     
+    include "../Include/user.h"
+     
     trusted {
         /* define ECALLs here. */
-        public void ecall_login([in] char* username,[in] char* password);
+           
+        public int ecall_login( [in, size=user_size] const user_t* user,  size_t user_size);
         public void ecall_register([in] char* username, [in] char* password);
         public void ecall_logout([in] char* token);
         public void ecall_verify([in] char* token);
+        public int ecall_create_users(
+            [in, string]const char* master_password
+        );
+        public int ecall_add_user(
+            [in, size=user_size]const user_t* user,
+            size_t user_size
+        );
+
     };
 
     untrusted {
         /* define OCALLs here. */
         void ocall_print_string([in, string] const char *str);
+        int ocall_save_users(
+            [in, size=sealed_size]const uint8_t* sealed_data, 
+            size_t sealed_size
+        );
+        int ocall_load_users(
+            [out, size=sealed_size]uint8_t* sealed_data, 
+            size_t sealed_size
+        );
+        int ocall_is_users(void);
     };
 };

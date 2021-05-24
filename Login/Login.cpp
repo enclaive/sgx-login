@@ -2,10 +2,12 @@
 //
 
 #include <iostream>
+#include <fstream>
 #include <string> // To use string
 #include "sgx_urts.h"
 #include "Login.h"
 #include "LoginEnclave_u.h"
+#include <fstream>
 
 /* Global EID shared by multiple threads */
 sgx_enclave_id_t global_eid = 0;
@@ -138,6 +140,8 @@ int SGX_CDECL main(int argc, char* argv[])
     (void)(argc);
     (void)(argv);
 
+    sgx_status_t ecall_status, enclave_status;
+    int updated, ret;
 
     std::cout << "Hello World!\n";
     char username[BUFSIZ] = { 'test' };
@@ -154,7 +158,7 @@ int SGX_CDECL main(int argc, char* argv[])
     char* user1 = new char[512];
     char* pass1 = new char[512];
 
-    std::cout << "Login: \n";
+    std::cout << "Register: \n";
     std::cout << "Username: ";
     std::cin >> user1;
 
@@ -162,13 +166,35 @@ int SGX_CDECL main(int argc, char* argv[])
     std::cin >> pass1;
 
     std::cout << "\n";
+    
+    ecall_status = ecall_create_users(global_eid, &ret, "test");
+    if (ecall_status != SGX_SUCCESS || ret == -1) {
+        printf("Fail to create new users.");
+    }
+    else {
+        printf("Users successfully created.");
+    }
 
-    ecall_register(global_eid, user1, pass1);
-    ecall_register(global_eid, user1, pass1);
+    //user hinzufügen
+    user_t* new_user = (user_t*)malloc(sizeof(user_t));
+
+    new_user->logged = 0;
+    strcpy_s(new_user->username, user1);
+    strcpy_s(new_user->password, pass1);
+    ecall_status = ecall_add_user(global_eid, &ret, new_user, sizeof(user_t));
+    if (ecall_status != SGX_SUCCESS || ret == -1) {
+        printf("Fail to add new item to wallet.");
+    }
+    else {
+        printf("Item successfully added to the wallet.");
+    }
+    free(new_user);
+   // ecall_register(global_eid, user1, pass1);
+   // ecall_register(global_eid, user1, pass1);
 
        
-    ecall_login(global_eid, user1, pass1);
-
+   // ecall_login(global_eid, user1, pass1);
+    
     char* user2 = new char[512];
     char* pass2 = new char[512];
 
@@ -181,8 +207,13 @@ int SGX_CDECL main(int argc, char* argv[])
 
     std::cout << "\n";
 
-    ecall_login(global_eid, user2, pass2);
+    user_t* new_user2 = (user_t*)malloc(sizeof(user_t));
 
+    new_user2->logged = 0;
+    strcpy_s(new_user2->username, user2);
+    strcpy_s(new_user2->password, pass2);
+    ecall_login(global_eid, &ret, new_user2, sizeof(user_t));
+    
     sgx_destroy_enclave(global_eid);
 
     printf("\n");
@@ -195,10 +226,38 @@ int SGX_CDECL main(int argc, char* argv[])
 
 
 
-void ocall_print_string(const char* str) {
+void ocall_print_string(const char* str) 
+{
     printf("%s", str);
 }
 
+int ocall_save_users(const uint8_t* sealed_data, const size_t sealed_size) 
+{
+
+    std::ofstream file("User.seal", std::ios::out | std::ios::binary);
+    if (file.fail()) { return 1; }
+    file.write((const char*)sealed_data, sealed_size);
+    file.close();
+   
+    return 0;
+
+}
+int ocall_load_users(uint8_t* sealed_data, const size_t sealed_size)
+{
+    std::ifstream file("User.seal", std::ios::in | std::ios::binary);
+    if (file.fail()) { return 1; }
+    file.read((char*)sealed_data, sealed_size);
+    file.close();
+    return 0;
+}
+
+int ocall_is_users(void) 
+{
+    std::ifstream file("User.seal", std::ios::in | std::ios::binary);
+    if (file.fail()) { return 0; } // failure means no users found
+    file.close();
+    return 1;
+}
 
 // Programm ausführen: STRG+F5 oder Menüeintrag "Debuggen" > "Starten ohne Debuggen starten"
 // Programm debuggen: F5 oder "Debuggen" > Menü "Debuggen starten"
