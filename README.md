@@ -74,7 +74,22 @@ git clone git@github.com:enclaive/sgx_login.git
 
 3. Open `sgx-login.sln` in Microsoft Visual Studio.
 
-4. Problems: The Build Version has to be the latest installed version to run this project and has to be selected for every project. The user can easily right click on one project -> Proprties -> General -> Windows SDK Version. The second problem could be solved by right click on one project -> Properties -> Extended -> Character Set -> Use Multibyte Character instead of Unicode. The other setup to set the project directories right is to go to the Properties -> Debugging -> Woring Directory: $(OutDir) for each project.
+### Problems
+
+The Build Version has to be the latest installed version to run this project and has to be selected for every project. The user can easily right click on one project:          
+```
+Proprties -> General -> Windows SDK Version. 
+```
+The second problem could be solved by right click on one project: 
+```
+Properties -> Extended -> Character Set -> Use Multibyte Character
+````
+instead of Unicode. The other setup to set the project directories right is to go to the 
+```
+Properties -> Debugging -> Woring Directory: $(OutDir)
+````
+ for each project.
+
 
 <!-- USAGE EXAMPLES -->
 ## Usage
@@ -92,5 +107,5 @@ The example sgx_login project is a console project where the user can be registe
 <!-- CONTRIBUTING -->
 ## Contributing
 
-Leon, Jannes, Tom has build this Intel SGX login project.
+Leon, Jannes, Tom has built this Intel SGX login project.
 
