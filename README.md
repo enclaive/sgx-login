@@ -108,5 +108,5 @@ The example sgx_login project is a console project where the user can be registe
 <!-- CONTRIBUTING -->
 ## Contributing
 
-Leon, Jannes, Tom has built this Intel SGX login project.
+Leon, Jannes, Tom built this Intel SGX login project.
 
