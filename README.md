@@ -34,7 +34,6 @@
     </li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
   </ol>
 </details>
 
@@ -48,7 +47,7 @@ Authentication is a very critical part of an application. Moving this into a sim
 ### Built With
 
 * [C++](https://www.cplusplus.com/)
-* [Intel® Software Guard Extensions](https://www.intel.com/content/www/us/en/architecture-and-technology/software-guard-extensions.html)
+* [Intel® SGX Software Guard Extensions](https://www.intel.com/content/www/us/en/architecture-and-technology/software-guard-extensions.html)
 
 
 <!-- GETTING STARTED -->
@@ -62,6 +61,7 @@ Make sure you installed the following software on your machine.
 
 - [git](https://github.com/git-guides/install-git)
 - [Microsoft Visual Studio](https://visualstudio.microsoft.com/)
+- [Intel® Software Guard Extensions](https://downloadcenter.intel.com/de/product/80895)
 
 ### Installation
 
@@ -74,26 +74,23 @@ git clone git@github.com:enclaive/sgx_login.git
 
 3. Open `sgx-login.sln` in Microsoft Visual Studio.
 
+4. Problems: The Build Version has to be the latest installed version to run this project and has to be selected for every project. The user can easily right click on one project -> Proprties -> General -> Windows SDK Version. The second problem could be solved by right click on one project -> Properties -> Extended -> Character Set -> Use Multibyte Character instead of Unicode. The other setup to set the project directories right is to go to the Properties -> Debugging -> Woring Directory: $(OutDir) for each project.
 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-_TBD: Build a example that shows the usage of the library._
+The example sgx_login project is a console project where the user can be registered, logged in and logged out. Just start the project using the normal function in Visual Studio and the console will appear. If the user needs any help, just type `help` to get some information to use the app. The following commands can be used:
+
+| Commands      | Description|
+| ------------- |:-----------|
+| help      | List all commands |
+| register  | Register a user with username and password   |
+| login     | User can be logged in with username and password  |
+| logout    | User can be logged out with the username |
+| verify    | Check if the username exists |
 
 <!-- CONTRIBUTING -->
 ## Contributing
 
-Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Leon, Jannes, Tom has build this Intel SGX login project.
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-
-
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE` for more information.
