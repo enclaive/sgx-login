@@ -105,6 +105,11 @@ The example sgx_login project is a console project where the user can be registe
 | logout    | User can be logged out with the username |
 | verify    | Check if the username exists |
 
+<!-- TL;DR -->
+##TL;DL
+
+- The sgx_login is build with the Intel sealing technology to save user information within the enclave permanently and an Enclave Libary.
+
 <!-- CONTRIBUTING -->
 ## Contributing
 
