@@ -34,6 +34,7 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#tl;dr">TL;DR</a></li>
     <li><a href="#contributing">Contributing</a></li>
   </ol>
 </details>
@@ -106,9 +107,11 @@ The example sgx_login project is a console project where the user can be registe
 | verify    | Check if the username exists |
 
 <!-- TL;DR -->
-##TL;DL
+## TL;DR
 
-- The sgx_login is build with the Intel sealing technology to save user information within the enclave permanently and an Enclave Libary.
+This project implements different SGX technologies
+- Intel sealing technology 
+- Enclave Libary.
 
 <!-- CONTRIBUTING -->
 ## Contributing
