@@ -111,7 +111,7 @@ The example sgx_login project is a console project where the user can be registe
 
 This project implements different SGX technologies
 - Intel sealing technology 
-- Enclave Libary.
+- Enclave Libary
 
 <!-- CONTRIBUTING -->
 ## Contributing
